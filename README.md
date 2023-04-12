@@ -1,1 +1,1 @@
-# LabPrograma-oII
+Trabalhos referentes a cadeira de Laboratório de Programação 2 (Segundo Semestre)
