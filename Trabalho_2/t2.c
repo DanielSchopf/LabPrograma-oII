@@ -20,9 +20,9 @@ int** alocar_matriz(int n, int d) {
     return mat;
 }
 
-void palavra_maiuscula(char c){
-    for(int i=0; i<strlen(c);i++){
-        c[i] = toupper(c[i]);
+void maiusculo(char* c){
+    for (int j = 0; c[j] !='\0'; j++) {
+        c[j] = toupper(c[j]);
     }
 }
 
@@ -34,7 +34,8 @@ void ler_mun(int n, Municipio *m, int d) {
         m[i].nome[strcspn(m[i].nome, "\n")] = '\0'; // remove o caractere de nova linha
         printf("Digite a populacao de %s:\n", m[i].nome);
         scanf("%d", &m[i].populacao);
-        m[i].dados = alocar_matriz(n, 3);
+        system("clear");
+        m[i].dados = alocar_matriz(d, 3);
         for (int j = 0; j < d; j++) {
             printf("Digite o dia:\n");
             scanf("%d", &m[i].dados[j][0]);
@@ -66,16 +67,38 @@ void busca_mun(int n, Municipio *m, int d) {
     fgets(c, 100, stdin);
     c[strcspn(c, "\n")] = '\0';
     system("clear");
+    int achou;
     for (int i = 0; i < n; i++) {
         if (strcmp(c, m[i].nome) == 0) {
             imprime_mun(m,i,d);
-        } else {
-        printf("Município não encontrado.\n");
-        }
+            achou=1;
+        } 
     }
-
+    if(achou==0) {
+        printf("Município não encontrado.\n");
 }
 
+void busca_geral(int n, Municipio *m, int d) {
+    for(int i=0;i<n;i++){
+        int confirmado=0, obito=0, novo_confirmado=0, novo_obito=0;
+        for(int j=0;j<d;j++){
+            confirmado += m[i].dados[j][1];
+            obito += m[i].dados[j][2];
+            if(j==(d-1)) {
+                novo_confirmado = m[i].dados[j][1];
+                novo_obito = m[i].dados[j][2];
+            }
+        }
+        float incidencia= ((confirmado*100000.0)/m[i].populacao);
+        float mortalidade= ((obito*100000.0)/m[i].populacao);
+        printf("Nome do municipio: %s\n", m[i].nome);
+        printf("Casos confirmados: %d\nNovos confirmados: %d\n", confirmado, novo_confirmado);
+        printf("Incidencia/100mil hab: %.2f\n", incidencia);
+        printf("Obitos: %d\nNovos obitos: %d\n", obito, novo_obito);
+        printf("Mortalidade: %.2f\n\n\n", mortalidade);
+    }
+}
+    
 int main() {
     int n, d;
     printf("Digite o numero de municipios presentes na pesquisa:\n");
@@ -92,7 +115,21 @@ int main() {
     system("cls");
 
     ler_mun(n, m, d);
-    busca_mun(n, m, d);
+    int escolha;
+    printf("Digite a opção desejada(1- Busca de municipio\t2- Dados Epidemiológicos):\n");
+    scanf("%d", &escolha);
+    system("clear");
+    switch(escolha) {
+        case 1:
+            getchar();
+            busca_mun(n, m, d);
+            break;
+        case 2:
+            getchar();
+            busca_geral(n, m, d);
+            break;
+        default: printf("Comando inválido!\n");
+    }
 
     return 0;
 }
