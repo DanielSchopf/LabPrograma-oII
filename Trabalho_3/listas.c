@@ -21,8 +21,14 @@ Data* ler_mes() {
 
 Hora* ler_hora() {
     Hora* h= (Hora*)malloc(sizeof(Hora));
-    printf("Insira o horario da consulta (hh mm): \n");
-    scanf("%d %d", &h->hora, &h->minuto);
+    while(true){
+        printf("Insira o horario da consulta (hh mm): \n");
+        scanf("%d %d", &h->hora, &h->minuto);
+        if((h->hora >= 8 && h->hora < 12) || (h->hora >= 14 && h->hora < 18)){
+            break;
+        }
+        printf("Horario inválido\n");
+    }
     return h;
 }
 
@@ -188,7 +194,7 @@ Consulta* ler_consulta(Consulta* c, Medico* m, Paciente* p){
             break;
         }
 
-        printf("CRM não encontrado, insira novamente");
+        printf("CRM não encontrado, insira novamente\n");
     }
     while(true){
         printf("Insira o CPF do paciente: ");
@@ -196,7 +202,7 @@ Consulta* ler_consulta(Consulta* c, Medico* m, Paciente* p){
         if(pac_busca(p, cpf)!=NULL){
             break;
         }
-        printf("CPF não encontrado, insira novamente");
+        printf("CPF não encontrado, insira novamente\n");
     }
 
     while(true){
@@ -232,6 +238,11 @@ bool consulta_busca(Consulta* c, Medico* m, Paciente* p, Data* d, Hora* h){
     return true;
 }
 
+Consulta* consulta_remove(Consulta* c){
+    Consulta* l = (Consulta*)malloc(sizeof(Consulta));
+
+}
+
 void cadastrar(Medico* m, Paciente* p) {
     system("clear");
     int escolha;
@@ -246,12 +257,54 @@ void cadastrar(Medico* m, Paciente* p) {
     }
 }
 
+Consulta* consultar(Consulta* c) {
+    Consulta* l= (Consulta*)malloc(sizeof(Consulta));
+    int cpf;
+    printf("Digite o CPF do paciente:\n");
+    scanf("%d", &cpf);
+    Data* d= ler_data();
+    Hora* h= ler_hora();
+    for(l=c; l!=NULL;l=l->prox) {
+        if(l->p->cpf == cpf && l->d->dia == d->dia && l->d->mes == d->mes && l->d->ano == d->ano && l->h->hora == h->hora && l->h->minuto == h->minuto) {
+            l->flag= 1;
+            printf("Digite a descricao da consulta:\n");
+            getchar();
+            fgets(l->descricao, 300, stdin);
+            return l;
+        }
+    }
+    printf("Consulta nao encontrada!\n");
+    return c;
+}
+
+
 void lista_consulta_dia(Consulta* c, Data* d) {
+    Consulta* l = (Consulta*)malloc(sizeof(Consulta));
+    for(l=c;l!=NULL;l=l->prox){
+        if(c->d->dia == d->dia && c->d->mes == d->mes && c->d->ano == d->ano){
+            if(c->flag == 0){
+                printf("Paciente: %s\n", l->p->nome);
+                printf("Medico: %s\n", l->m->nome);
+                printf("Data: %d/%d/%d\n", l->d->dia, l->d->mes, l->d->ano);
+                printf("Horario: %d:%d\n", l->h->hora, l->h->minuto);
+                printf("Convenio: %s\n\n", l->convenio);
+            }
+        }
+    }
 
 }
 
 void lista_consulta_paciente(Consulta* c, int cpf) {
-    printf("oiii");
+    Consulta* l = (Consulta*)malloc(sizeof(Consulta));
+    for(l=c;l!=NULL;l=l->prox){
+        if(c->p->cpf == cpf){
+            printf("Paciente: %s\n", l->p->nome);
+            printf("Medico: %s\n", l->m->nome);
+            printf("Data: %d/%d/%d\n", l->d->dia, l->d->mes, l->d->ano);
+            printf("Horario: %d:%d\n", l->h->hora, l->h->minuto);
+            printf("Convenio: %s\n\n", l->convenio);
+        }
+    }
 }
 
 void lista_consulta_descricao(Consulta* c, Data* d, Hora* h, int cpf) {
@@ -259,12 +312,34 @@ void lista_consulta_descricao(Consulta* c, Data* d, Hora* h, int cpf) {
 }
 
 void lista_consulta_medico_area(Consulta* c, char area[100], Data* d) {
-    printf("oiii");
+    Consulta* l = (Consulta*)malloc(sizeof(Consulta));
+    for(l=c;l!=NULL;l=l->prox){
+        if(c->d->mes == d->mes){
+            if(strcpy(c->m->area, area)){
+                printf("Paciente: %s\n", l->p->nome);
+            }
+        }
+    }
 }
 
-void lista_consulta_pacientes_medico(Consulta* c) {
-    printf("oiii");
+void lista_consulta_pacientes_medico(Medico* m, Consulta* c) {
+    Medico* l = (Medico*)malloc(sizeof(Medico));
+    Consulta* j = (Consulta*)malloc(sizeof(Consulta));
+    for(l=m;l!=NULL;l=l->prox){
+        printf("Medico: %s\n", l->nome);
+        bool paciente_impresso = false;
+        for(j=c;j!=NULL;j=j->prox){
+            if(j->m->crm == l->crm){
+                if (!paciente_impresso) {
+                    printf("Paciente: %s\n", j->p->nome);
+                    paciente_impresso = true;
+                }
+            }
+        }
+        printf("\n\n");
+    }
 }
+
 
 void relatorio(Consulta* c, Medico* m, Paciente* p) {
     Data* d;
@@ -294,14 +369,15 @@ void relatorio(Consulta* c, Medico* m, Paciente* p) {
         break;
     case 4:
             printf("Digite a area desejada:\n");
+            getchar();
             fgets(area, 100, stdin);
+
             d= ler_mes();
             system("clear");
             lista_consulta_medico_area(c, area, d);
         break;
     case 5:
-        lista_consulta_pacientes_medico(c);
+        lista_consulta_pacientes_medico(m, c);
         break;
     }
 }
-
