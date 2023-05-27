@@ -56,6 +56,7 @@ struct consulta {
     Hora* h;
     char convenio[80];
     int flag;
+    char descricao[300];
     struct consulta* prox;
 
 };
@@ -67,8 +68,17 @@ void consulta_imprime(Consulta* c);
 int consulta_vazio(Consulta* c);
 Consulta* ler_consulta(Consulta* c, Medico* m, Paciente* p);
 bool consulta_busca(Consulta* c, Medico* m, Paciente* p, Data* d, Hora* h);
+Consulta* consulta_remove(Consulta* c);
 
 
 void cadastrar(Medico* m, Paciente* p);
-void relatorio(Consulta* c, Medico* m, Paciente* p);
+Consulta* consultar(Consulta* c);
 
+void lista_consulta_dia(Consulta* c, Data* d);
+void lista_consulta_paciente(Consulta* c, int cpf);
+void lista_consulta_descricao(Consulta* c, Data* d, Hora* h, int cpf);
+void lista_consulta_medico_area(Consulta* c, char area[100], Data* d);
+void lista_consulta_pacientes_medico(Medico* m, Consulta* c);
+
+
+void relatorio(Consulta* c, Medico* m, Paciente* p);
