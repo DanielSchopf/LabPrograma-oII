@@ -70,8 +70,6 @@ Consulta* ler_consulta(Consulta* c, Medico* m, Paciente* p);
 bool consulta_busca(Consulta* c, Medico* m, Paciente* p, Data* d, Hora* h);
 Consulta* consulta_remove(Consulta* c);
 
-
-void cadastrar(Medico* m, Paciente* p);
 Consulta* consultar(Consulta* c);
 
 void lista_consulta_dia(Consulta* c, Data* d);
